@@ -22,7 +22,7 @@ document.addEventListener("ondataloaded", () => {
     refreshData();
 });
 
-function makeTodo(name, date, isdone) {
+function makeTodo(name, date, category, isdone) {
     const article = document.createElement("article");
     article.classList.add("task");
 
@@ -33,7 +33,11 @@ function makeTodo(name, date, isdone) {
     p.innerHTML = "Due date: " + date;
     p.classList.add("date");
 
-    article.append(h3, p);
+    const categoryElement = document.createElement("p");
+    categoryElement.innerHTML = "Category: " + category;
+    categoryElement.classList.add("category");
+
+    article.append(h3, p, categoryElement);
 
     if (isdone) {
         article.append(btnUndone(), btnDelete());
@@ -44,11 +48,12 @@ function makeTodo(name, date, isdone) {
     return article;
 }
 
-function makeTodoObject(name, date, isDone) {
+function makeTodoObject(name, date, category, isDone) {
     return {
         id: +new Date(),
         name,
         date,
+        category,
         isDone,
     };
 }
@@ -59,11 +64,12 @@ function addTodo() {
 
     const inputName = document.getElementById("inputname").value;
     const inputDate = document.getElementById("inputdate").value;
+    const inputCategory = document.getElementById("inputcategory").value;
     const inputDone = document.getElementById("inputdone").checked;
-
-    const newTodo = makeTodo(inputName, inputDate, inputDone);
-
-    const newTodoObject = makeTodoObject(inputName, inputDate, inputDone);
+    
+    const newTodo = makeTodo(inputName, inputDate, inputCategory, inputDone);
+    
+    const newTodoObject = makeTodoObject(inputName, inputDate, inputCategory, inputDone);
 
     newTodo["id"] = newTodoObject.id;
 
@@ -97,7 +103,6 @@ function makeBtn(buttonClass, eventListener) {
 
     return button;
 }
-
 function doneTodo(todo) {
     const done = document.getElementById("done");
     const article = document.createElement("article");
@@ -107,9 +112,11 @@ function doneTodo(todo) {
     article.classList.add("task");
     h3.innerHTML = todo.querySelector("h3").innerHTML;
     p.innerHTML = todo.querySelector(".date").innerHTML;
-    p.classList.add("date");
-
-    article.append(h3, p, btnUndone(), btnDelete());
+    const categoryElement = document.createElement("p");
+    categoryElement.innerHTML = todo.querySelector(".category").innerHTML;
+    categoryElement.classList.add("category");
+    
+    article.append(h3, p, categoryElement, btnUndone(), btnDelete());
 
     done.append(article);
 
@@ -136,9 +143,11 @@ function undoneTodo(todo) {
     article.classList.add("task");
     h3.innerHTML = todo.querySelector("h3").innerHTML;
     p.innerHTML = todo.querySelector(".date").innerHTML;
-    p.classList.add("date");
-
-    article.append(h3, p, btnDone(), btnDelete());
+    const categoryElement = document.createElement("p");
+    categoryElement.innerHTML = todo.querySelector(".category").innerHTML;
+    categoryElement.classList.add("category");
+    
+    article.append(h3, p, categoryElement, btnDone(), btnDelete());
 
     unDone.append(article);
 
@@ -223,7 +232,7 @@ function loadData() {
     const done = document.getElementById("done");
 
     for (item of todos) {
-        const todo = makeTodo(item.name, item.date, item.isDone);
+        const todo = makeTodo(item.name, item.date, item.category, item.isDone);
         todo["id"] = item.id;
 
         if (!item.isDone) {
